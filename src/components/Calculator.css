@@ -1,0 +1,66 @@
+.calculator {
+    width: 360px; /* Largeur ajustée */
+    height: 600px; /* Augmenter légèrement la hauteur pour équilibrer */
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    background-color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .calculator .display {
+    background-color: #000;
+    color: white;
+    font-size: 3em; /* Augmenter la taille de la police */
+    text-align: right;
+    padding: 25px; /* Augmenter le padding pour agrandir la zone d'affichage */
+    border-radius: 20px;
+    margin-bottom: 20px;
+    height: 100px; /* Ajuster la hauteur de l'écran */
+  }
+  
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px; /* Ajuster l'espacement entre les boutons */
+  }
+  
+  button {
+    background-color: #505050;
+    color: white;
+    font-size: 1.4em; /* Réduire légèrement la taille du texte */
+    border: none;
+    border-radius: 50%;
+    padding: 16px; /* Réduire encore un peu le padding pour éviter les débordements */
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+  
+  button.operation {
+    background-color: #ff9500;
+    color: white;
+  }
+  
+  button.zero {
+    grid-column: span 2;
+    border-radius: 40px;
+  }
+  
+  button:active {
+    background-color: #a5a5a5;
+  }
+  
+  button.operation:active {
+    background-color: #ffb300;
+  }
+  
+  .result {
+    color: white;
+    font-size: 2em;
+    text-align: right;
+    padding: 10px;
+  }
+  
