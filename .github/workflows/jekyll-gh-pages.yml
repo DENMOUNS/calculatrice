@@ -39,11 +39,14 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Verify build directory
+        run: ls -la build # Vérifiez le contenu du répertoire build
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: react-build
-          path: ./build
+          path: build
 
   # Job de déploiement
   deploy:
@@ -56,10 +59,10 @@ jobs:
       - name: Set up Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
-          path: ./build
+          name: react-build
 
       - name: Deploy to GitHub Pages
         id: deployment
