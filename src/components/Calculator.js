@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import './Calculator.css';
 import axios from 'axios';
+import { evaluate } from 'mathjs'; // Import de la fonction evaluate
+import './Calculator.css'; // Assure-toi que ce fichier existe et est bien stylisé
 
 function Calculator() {
   const [input, setInput] = useState('');
@@ -20,69 +21,23 @@ function Calculator() {
       let apiUrl = 'http://localhost:8080/api/calculate';
       let payload = { type: '', operand1: 0, operand2: 0 };
 
-      if (input.includes('sin') || input.includes('cos') || input.includes('tan') || input.includes('exp') || input.includes('log')) {
-        // Traitement des fonctions trigonométriques et autres opérations spéciales
-        const [operation, operand] = input.match(/([a-z]+)\((\d+(\.\d+)?)\)/).slice(1, 3);
+      // Vérifie si l'entrée est une fonction mathématique
+      const functionMatch = input.match(/(sin|cos|tan|exp|log)\((\d+(\.\d+)?)\)/);
+      if (functionMatch) {
+        const [operation, operand] = functionMatch.slice(1, 3);
         payload.operand1 = parseFloat(operand);
-
-        switch (operation) {
-          case 'sin':
-            payload.type = 'sin';
-            break;
-          case 'cos':
-            payload.type = 'cos';
-            break;
-          case 'tan':
-            payload.type = 'tan';
-            break;
-          case 'exp':
-            payload.type = 'exp';
-            break;
-          case 'log':
-            payload.type = 'log';
-            break;
-          default:
-            throw new Error("Opération inconnue");
-        }
+        payload.type = operation;
       } else {
-        // Traitement des opérations classiques (addition, soustraction, etc.)
-        const regex = /(\d+)([+\-*/])(\d+)/;
-        const match = input.match(regex);
-
-        if (!match) {
-          throw new Error("L'expression doit être sous la forme 'operande1 operator operande2'");
-        }
-
-        const operand1 = parseFloat(match[1]);
-        const operator = match[2];
-        const operand2 = parseFloat(match[3]);
-
-        payload.operand1 = operand1;
-        payload.operand2 = operand2;
-
-        switch (operator) {
-          case '+':
-            payload.type = 'addition';
-            break;
-          case '-':
-            payload.type = 'soustraction';
-            break;
-          case '*':
-            payload.type = 'multiplication';
-            break;
-          case '/':
-            payload.type = 'division';
-            break;
-          default:
-            throw new Error("Opérateur inconnu");
-        }
+        const result = evaluate(input);
+        setResult(result);
+        return;
       }
 
       const response = await axios.post(apiUrl, payload);
       setResult(response.data);
 
     } catch (error) {
-      console.error("Error calculating", error);
+      console.error("Erreur de calcul", error);
       setResult('Erreur: ' + error.message);
     }
   };
@@ -93,12 +48,12 @@ function Calculator() {
 
   return (
     <div className="calculator">
-      <div className="result">{result !== null ? `Result: ${result}` : ''}</div>
-      <input 
-        type="text" 
-        value={input} 
-        onChange={handleInputChange} 
-        placeholder="Enter expression (e.g., 5 + 3, sin(30))" 
+      <div className="result">{result !== null ? `Résultat: ${result}` : ''}</div>
+      <input
+        type="text"
+        value={input}
+        onChange={handleInputChange}
+        placeholder="Entrez une expression (ex : 1 + 2 + 3, sin(30))"
       />
       <div className="buttons">
         {[1, 2, 3].map(num => <button key={num} onClick={() => addToInput(num.toString())}>{num}</button>)}
@@ -115,8 +70,8 @@ function Calculator() {
         <button onClick={() => addToInput('exp(')}>exp(</button>
         <button onClick={() => addToInput('log(')}>log(</button>
         <button onClick={() => addToInput(')')}>)</button>
-        <button onClick={handleCalculate}>Calculate</button>
-        <button onClick={handleClear}>Clear</button>
+        <button onClick={handleCalculate}>Calculer</button>
+        <button onClick={handleClear}>Effacer</button>
       </div>
     </div>
   );
