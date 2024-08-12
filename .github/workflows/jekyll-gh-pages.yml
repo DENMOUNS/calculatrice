@@ -1,0 +1,52 @@
+# Workflow pour la construction et le déploiement d'un site React sur GitHub Pages
+name: Deploy React to GitHub Pages
+
+on:
+  # Déclenche le workflow lors des push sur la branche principale
+  push:
+    branches: ["main"]
+
+  # Permet l'exécution manuelle du workflow depuis l'onglet Actions
+  workflow_dispatch:
+
+# Définir les permissions du GITHUB_TOKEN pour permettre le déploiement sur GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Autoriser un seul déploiement concurrent sans annuler les déploiements en cours
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Job de construction
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Spécifiez la version de Node.js que vous utilisez
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        run: |
+          # Ajouter un CNAME si nécessaire
+          echo 'votre-domaine.com' > build/CNAME
+
+          # Déploiement vers gh-pages
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add build
+          git commit -m "Deploy to GitHub Pages"
+          git push --force --quiet "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" `git subtree split --prefix build main`:gh-pages
